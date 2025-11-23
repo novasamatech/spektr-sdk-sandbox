@@ -1,0 +1,9 @@
+src/locales/*.json
+node_modules
+package.json
+package-lock.json
+coverage
+release
+.swc
+.github
+.husky
