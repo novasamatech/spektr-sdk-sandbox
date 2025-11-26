@@ -46,25 +46,11 @@ export const AddDappModal = memo(({ children }: PropsWithChildren) => {
           <div className="grid gap-4">
             <div className="grid gap-3">
               <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="Your dapp name"
-                required
-                defaultValue="Dude where is my validator?"
-              />
+              <Input id="name" name="name" placeholder="Your dapp name" required />
             </div>
             <div className="grid gap-3">
               <Label htmlFor="url">Url</Label>
-              <Input
-                type="url"
-                name="url"
-                id="url"
-                placeholder="https://example.com"
-                pattern="http.+"
-                required
-                defaultValue="https://polkadot-dapp-example.vercel.app"
-              />
+              <Input type="url" name="url" id="url" placeholder="https://example.com" pattern="http.+" required />
             </div>
           </div>
           <DialogFooter>

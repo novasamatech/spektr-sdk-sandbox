@@ -1,4 +1,4 @@
-import { createContainer, createIframeProvider } from '@novasamatech/spektr-dapp-host-container';
+import { createContainer, createIframeProvider } from '@novasamatech/host-container';
 import { useUnit } from 'effector-react';
 import { Activity, memo, useEffect, useState } from 'react';
 import { $selectedAccount, $wallets, getWalletsFx } from '@/state/accounts';
@@ -107,11 +107,12 @@ const Content = memo(({ tab }: { tab: DAppTab }) => {
       },
       async signPayload(payload) {
         const wallet = await getSigner(payload.address);
-        const { signature } = await wallet.signer.signPayload(payload);
+        const { signature, signedTransaction } = await wallet.signer.signPayload(payload);
 
         return {
           id: 0,
           signature,
+          signedTransaction,
         };
       },
       async createTransaction() {
