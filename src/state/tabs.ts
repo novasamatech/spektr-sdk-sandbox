@@ -1,6 +1,5 @@
 import type { ConnectionStatus } from '@novasamatech/host-api';
 import { createStore, createEvent, sample, restore } from 'effector';
-import type { ConnectionStatus } from './types';
 import { persist } from 'effector-storage/local';
 import { nanoid } from 'nanoid';
 import { spread } from 'patronum';
