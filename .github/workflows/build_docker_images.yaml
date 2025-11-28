@@ -19,7 +19,7 @@ env:
 jobs:
   build-docker-images:
     if: |
-      github.event_name == 'push' || 
+      github.event_name == 'push' ||
       (github.event_name == 'pull_request' && contains(github.event.label.name, 'internal-build'))
     runs-on: ubuntu-latest
     permissions:
@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-js-image-version: [20]
+        node-js-image-version: [24]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
