@@ -19,11 +19,14 @@ export const NoDapp = () => {
         <EmptyDescription>Your Dapp will display here</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        {favorites.map(dapp => (
-          <Button key={dapp.url} variant="ghost" size="sm" onClick={() => openTab(dapp)}>
-            <Star /> {dapp.name}
-          </Button>
-        ))}
+        {favorites.length > 0 && <EmptyDescription>Open from favorites</EmptyDescription>}
+        <div className="flex flex-col gap-1">
+          {favorites.map(dapp => (
+            <Button key={dapp.url} variant="ghost" size="sm" onClick={() => openTab(dapp)}>
+              <Star /> {dapp.name}
+            </Button>
+          ))}
+        </div>
         {favorites.length > 0 && <EmptyDescription>or</EmptyDescription>}
         <AddDappModal>
           <Button variant="ghost">

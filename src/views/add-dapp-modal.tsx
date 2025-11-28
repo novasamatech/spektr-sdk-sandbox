@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -40,8 +39,7 @@ export const AddDappModal = memo(({ children }: PropsWithChildren) => {
           }}
         >
           <DialogHeader>
-            <DialogTitle>Add DApp</DialogTitle>
-            <DialogDescription>Bibip</DialogDescription>
+            <DialogTitle>Add New Dapp</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4">
             <div className="grid gap-3">
