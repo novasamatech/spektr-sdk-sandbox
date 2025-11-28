@@ -1,5 +1,5 @@
 import { useAutoAnimate } from '@formkit/auto-animate/react';
-import type { ConnectionStatus } from '@novasamatech/spektr-sdk-transport';
+import type { ConnectionStatus } from '@novasamatech/host-api';
 import { Star, XIcon } from 'lucide-react';
 import { useUnit } from 'effector-react';
 import { memo } from 'react';

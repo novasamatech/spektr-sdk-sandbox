@@ -1,4 +1,4 @@
-import type { ConnectionStatus } from '@novasamatech/spektr-sdk-transport';
+import type { ConnectionStatus } from '@novasamatech/host-api';
 
 export type DApp = {
   name: string;

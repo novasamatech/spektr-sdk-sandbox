@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "typecheck": "tsc -p ./tsconfig.app.json --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "husky"
   },
   "dependencies": {
     "@floating-ui/react": "0.27.16",
@@ -50,6 +52,7 @@
     "eslint-plugin-react-hooks": "5.2.0",
     "eslint-plugin-react-refresh": "0.4.24",
     "globals": "16.5.0",
+    "husky": "9.1.7",
     "prettier": "3.6.2",
     "prettier-plugin-tailwindcss": "0.7.1",
     "tailwindcss": "4.1.17",

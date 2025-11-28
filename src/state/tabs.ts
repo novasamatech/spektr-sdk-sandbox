@@ -1,4 +1,4 @@
-import type { ConnectionStatus } from '@novasamatech/spektr-sdk-transport';
+import type { ConnectionStatus } from '@novasamatech/host-api';
 import { createStore, createEvent, sample, restore } from 'effector';
 import { persist } from 'effector-storage/local';
 import { nanoid } from 'nanoid';
