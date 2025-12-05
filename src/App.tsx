@@ -6,10 +6,7 @@ import { Tabs } from './views/tabs';
 import { PappProvider, PairingModal } from '@novasamatech/host-papp-ui';
 import { createPappHostAdapter } from '@novasamatech/host-papp';
 
-const papp = createPappHostAdapter(
-  'SDK Sandbox',
-  'https://gist.githubusercontent.com/valentunn/97938ca74b8d984f62ec95c7e633e24f/raw/b52f8ca43d8c3661d4360b16ca54652ad0a4f664/test_metadata.json',
-);
+const papp = createPappHostAdapter('SDK Sandbox', 'https://shorturl.at/zGkir');
 
 export function App() {
   return (
