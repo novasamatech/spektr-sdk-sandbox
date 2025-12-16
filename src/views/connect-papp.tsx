@@ -1,16 +1,36 @@
-import { useSignInFlow } from '@novasamatech/host-papp-ui';
+import { useAuthenticateFlow, useSession, useSessionIdentity } from '@novasamatech/host-papp-ui';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../components/ui/dropdown-menu';
 
 export const ConnectWallet = () => {
-  const signIn = useSignInFlow();
+  const auth = useAuthenticateFlow();
+  const { session } = useSession();
+
+  const [identity] = useSessionIdentity(session);
+
+  if (session) {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button className="w-full overflow-hidden" variant="default">
+            {identity ? identity.liteUsername : 'Unknown user'}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" align="start">
+          <DropdownMenuItem onClick={() => auth.disconnect(session)}>Disconnect</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  }
 
   return (
-    <Button
-      className="w-full overflow-hidden"
-      variant={signIn.identity ? 'default' : 'outline'}
-      onClick={() => signIn.signIn()}
-    >
-      {signIn.identity ? signIn.identity.liteUsername : 'Connect Polkadot'}
+    <Button className="w-full overflow-hidden" variant="outline" onClick={() => auth.authenticate()}>
+      Connect Polkadot
     </Button>
   );
 };
