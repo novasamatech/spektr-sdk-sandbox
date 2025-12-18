@@ -4,9 +4,12 @@ import { AppSidebar } from './views/app-sidebar';
 import { Browser } from './views/browser';
 import { Tabs } from './views/tabs';
 import { PappProvider, PairingModal } from '@novasamatech/host-papp-ui';
-import { createPappHostAdapter } from '@novasamatech/host-papp';
+import { createPappAdapter } from '@novasamatech/host-papp';
 
-const papp = createPappHostAdapter('SDK Sandbox', 'https://shorturl.at/zGkir');
+const papp = createPappAdapter({
+  appId: 'SDK Sandbox',
+  metadata: 'https://shorturl.at/zGkir',
+});
 
 export function App() {
   return (
