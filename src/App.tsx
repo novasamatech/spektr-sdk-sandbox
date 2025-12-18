@@ -8,7 +8,7 @@ import { createPappAdapter } from '@novasamatech/host-papp';
 
 const papp = createPappAdapter({
   appId: 'SDK Sandbox',
-  metadata: 'https://shorturl.at/zGkir',
+  metadata: 'https://spektr-sdk-sandbox-dev.novaspektr.io/papp-metadata.json',
 });
 
 export function App() {
