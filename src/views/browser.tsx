@@ -1,11 +1,18 @@
 import { createContainer, createIframeProvider } from '@novasamatech/host-container';
+import { useSession, useSessionIdentity } from '@novasamatech/host-papp-ui';
+import { AccountId } from '@polkadot-api/substrate-bindings';
 import { useUnit } from 'effector-react';
 import { Activity, memo, useEffect, useState } from 'react';
-import { $selectedAccount, $wallets, getWalletsFx } from '@/state/accounts';
 import { $selectedTab, $tabs, changeTabConnectionStatus } from '@/state/tabs';
 import { type DAppTab } from '@/state/types';
 import { useLooseRef } from '@/hooks/use-loose-ref';
+import { cn, nonNullable } from '@/lib/utils';
 import { NoDapp } from './no-dapp';
+import { type PromiseWithResolvers, promiseWithResolvers } from '@/lib/promiseWithResolvers';
+import type { SignerPayloadJSON, SignerResult } from '@polkadot/types/types';
+import { SignPayloadModal } from './sign-payload-modal';
+
+const accountId = AccountId();
 
 export const Browser = memo(() => {
   const tabs = useUnit($tabs);
@@ -31,15 +38,14 @@ export const Browser = memo(() => {
 });
 
 const Content = memo(({ tab }: { tab: DAppTab }) => {
-  const selectedAccount = useUnit($selectedAccount);
-  const wallets = useUnit($wallets);
-  const accountRef = useLooseRef(selectedAccount);
+  const { session } = useSession();
+  const [identity] = useSessionIdentity(session);
+  const sessionRef = useLooseRef(session);
+  const identityRef = useLooseRef(identity);
+  const [signRequest, setSignRequest] = useState<SignerPayloadJSON | null>(null);
+  const [signRequestPromise, setSignRequestPromise] = useState<PromiseWithResolvers<SignerResult> | null>(null);
 
   const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null);
-
-  useEffect(() => {
-    getWalletsFx();
-  }, []);
 
   useEffect(() => {
     if (!iframe) return;
@@ -52,68 +58,35 @@ const Content = memo(({ tab }: { tab: DAppTab }) => {
 
     container.handleAccounts({
       async get() {
-        const account = accountRef();
+        const account = sessionRef();
+        const identity = identityRef();
         if (account) {
           return [
             {
-              address: account.address,
+              address: accountId.dec(account.remoteAccount.accountId),
               genesisHash: null,
-              name: account.name,
+              name: identity?.liteUsername,
               type: 'sr25519',
             },
           ];
         }
         return [];
       },
-      subscribe(callback) {
-        return $selectedAccount.watch(account => {
-          if (account) {
-            callback([
-              {
-                address: account.address,
-                genesisHash: null,
-                name: account.name,
-                type: 'sr25519',
-              },
-            ]);
-          }
-        });
+      subscribe() {
+        return () => {};
       },
     });
 
-    const getSigner = async (address: string) => {
-      const account = accountRef();
-      if (account && account.signer && address === account.address) {
-        const wallet = wallets.find(w => w.extensionName === account.source);
-        if (!wallet) {
-          throw new Error(`Wallet ${account.source} not found.`);
-        }
-        await wallet.enable('SDK Sandbox');
-        return wallet;
-      }
-
-      throw new Error("Can't sign raw data - account not found");
-    };
-
     container.handleSignRequest({
-      async signRaw(raw) {
-        const wallet = await getSigner(raw.address);
-        const { signature } = await wallet.signer.signRaw(raw);
-
-        return {
-          id: 0,
-          signature,
-        };
+      async signRaw() {
+        throw new Error('signRaw is not implemented');
       },
       async signPayload(payload) {
-        const wallet = await getSigner(payload.address);
-        const { signature, signedTransaction } = await wallet.signer.signPayload(payload);
+        const resolver = promiseWithResolvers<SignerResult>();
+        setSignRequest(payload);
+        setSignRequestPromise(resolver);
 
-        return {
-          id: 0,
-          signature,
-          signedTransaction,
-        };
+        return resolver.promise;
       },
       async createTransaction() {
         throw new Error('createTransaction not implemented.');
@@ -131,11 +104,39 @@ const Content = memo(({ tab }: { tab: DAppTab }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab.dapp, iframe]);
+
+  const hasOverlay = nonNullable(signRequest);
+
   return (
     <div className="h-full w-full overflow-hidden">
-      <div className="flex h-full w-full flex-col overflow-hidden rounded-lg shadow-sm">
+      <div
+        className={cn('flex h-full w-full flex-col overflow-hidden rounded-lg shadow-sm', {
+          'blur-[2px] grayscale-50': hasOverlay,
+        })}
+      >
         <iframe ref={setIframe} className="h-full w-full grow appearance-none border-none transition-all" />
       </div>
+
+      {nonNullable(signRequest) && nonNullable(session) && (
+        <SignPayloadModal
+          session={session}
+          payload={signRequest}
+          onResult={result => {
+            if (signRequestPromise) {
+              signRequestPromise.resolve(result);
+            }
+            setSignRequestPromise(null);
+            setSignRequest(null);
+          }}
+          onCancel={reason => {
+            if (signRequestPromise) {
+              signRequestPromise.reject(new Error(reason));
+            }
+            setSignRequestPromise(null);
+            setSignRequest(null);
+          }}
+        />
+      )}
     </div>
   );
 });

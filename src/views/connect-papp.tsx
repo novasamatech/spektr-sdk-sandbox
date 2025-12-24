@@ -1,4 +1,4 @@
-import { useAuthenticateFlow, useSession, useSessionIdentity } from '@novasamatech/host-papp-ui';
+import { useAuthentication, useSession, useSessionIdentity } from '@novasamatech/host-papp-ui';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,7 +8,7 @@ import {
 } from '../components/ui/dropdown-menu';
 
 export const ConnectWallet = () => {
-  const auth = useAuthenticateFlow();
+  const auth = useAuthentication();
   const { session } = useSession();
 
   const [identity] = useSessionIdentity(session);
