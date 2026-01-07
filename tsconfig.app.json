@@ -28,8 +28,11 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "/public/*": [
+        "./public/*"
       ]
     }
   },
-  "include": ["src"]
+  "include": ["src", "public"]
 }

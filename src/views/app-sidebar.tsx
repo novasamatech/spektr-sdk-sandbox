@@ -16,7 +16,8 @@ import { Button } from '../components/ui/button';
 import { cn } from '../lib/utils';
 import { openTab } from '../state/tabs';
 import { AddDappModal } from './add-dapp-modal';
-import { ConnectWallet } from './connect-wallet';
+import { ConnectWallet } from './connect-papp';
+import { SsProviderSelect } from './ss-provider-select';
 
 export const AppSidebar = () => {
   const favorites = useUnit($favorites);
@@ -33,6 +34,9 @@ export const AppSidebar = () => {
             <SidebarMenu>
               <SidebarMenuItem>
                 <ConnectWallet />
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SsProviderSelect />
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroup>
