@@ -1,7 +1,8 @@
 import { createContainer, createIframeProvider } from '@novasamatech/host-container';
-import { useSession, useSessionIdentity } from '@novasamatech/host-papp-ui';
-import { AccountId } from '@polkadot-api/substrate-bindings';
+import { toHex } from '@novasamatech/host-api';
+import { useSession, useSessionIdentity } from '@novasamatech/host-papp-react-ui';
 import { useUnit } from 'effector-react';
+import { fromPromise } from 'neverthrow';
 import { Activity, memo, useEffect, useState } from 'react';
 import { $selectedTab, $tabs, changeTabConnectionStatus } from '@/state/tabs';
 import { type DAppTab } from '@/state/types';
@@ -11,8 +12,6 @@ import { NoDapp } from './no-dapp';
 import { type PromiseWithResolvers, promiseWithResolvers } from '@/lib/promiseWithResolvers';
 import type { SignerPayloadJSON, SignerResult } from '@polkadot/types/types';
 import { SignPayloadModal } from './sign-payload-modal';
-
-const accountId = AccountId();
 
 export const Browser = memo(() => {
   const tabs = useUnit($tabs);
@@ -56,41 +55,39 @@ const Content = memo(({ tab }: { tab: DAppTab }) => {
     });
     const container = createContainer(iframeProvider);
 
-    container.handleAccounts({
-      async get() {
-        const account = sessionRef();
-        const identity = identityRef();
-        if (account) {
-          return [
-            {
-              address: accountId.dec(account.remoteAccount.accountId),
-              genesisHash: null,
-              name: identity?.liteUsername,
-              type: 'sr25519',
-            },
-          ];
-        }
-        return [];
-      },
-      subscribe() {
-        return () => {};
-      },
+    container.handleFeature((params, { ok }) => {
+      if (params.tag === 'Chain') {
+        return ok(false);
+      }
+      return ok(false);
     });
 
-    container.handleSignRequest({
-      async signRaw() {
-        throw new Error('signRaw is not implemented');
-      },
-      async signPayload(payload) {
-        const resolver = promiseWithResolvers<SignerResult>();
-        setSignRequest(payload);
-        setSignRequestPromise(resolver);
+    container.handleGetNonProductAccounts((_, { ok }) => {
+      const account = sessionRef();
+      const identity = identityRef();
+      if (account) {
+        return ok([{ publicKey: account.remoteAccount.accountId, name: identity?.liteUsername }]);
+      }
+      return ok([]);
+    });
 
-        return resolver.promise;
-      },
-      async createTransaction() {
-        throw new Error('createTransaction not implemented.');
-      },
+    container.handleSignPayload((payload, { ok, err }) => {
+      const resolver = promiseWithResolvers<SignerResult>();
+      setSignRequest(payload);
+      setSignRequestPromise(resolver);
+
+      return fromPromise(resolver.promise, e => e as never)
+        .andThen(result => {
+          return ok({
+            signature: result.signature,
+            signedTransaction: result.signedTransaction
+              ? typeof result.signedTransaction === 'string'
+                ? result.signedTransaction
+                : toHex(result.signedTransaction)
+              : undefined,
+          });
+        })
+        .orElse(e => err(e));
     });
 
     container.subscribeConnectionStatus(status => {
@@ -130,7 +127,7 @@ const Content = memo(({ tab }: { tab: DAppTab }) => {
           }}
           onCancel={reason => {
             if (signRequestPromise) {
-              signRequestPromise.reject(new Error(reason));
+              signRequestPromise.reject(reason);
             }
             setSignRequestPromise(null);
             setSignRequest(null);

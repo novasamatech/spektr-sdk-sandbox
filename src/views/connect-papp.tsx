@@ -1,4 +1,4 @@
-import { useAuthentication, useSession, useSessionIdentity } from '@novasamatech/host-papp-ui';
+import { useAuthentication, useSession, useSessionIdentity } from '@novasamatech/host-papp-react-ui';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

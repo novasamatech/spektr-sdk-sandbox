@@ -1,4 +1,5 @@
 import type { UserSession } from '@novasamatech/host-papp';
+import { SigningErr } from '@novasamatech/host-api';
 import { toHex } from '@polkadot-api/utils';
 import { type SignerPayloadJSON, type SignerResult } from '@polkadot/types/types';
 import { memo, useState } from 'react';
@@ -9,7 +10,7 @@ import { Field, FieldDescription, FieldLabel } from '../components/ui/field';
 type Props = {
   session: UserSession;
   payload: SignerPayloadJSON;
-  onCancel: (message: string) => void;
+  onCancel: (error: unknown) => void;
   onResult: (signResult: SignerResult) => void;
 };
 
@@ -36,12 +37,14 @@ export const SignPayloadModal = memo(({ session, payload, onCancel, onResult }: 
             signature: toHex(signature) as `0x${string}`,
             signedTransaction,
           }),
-        e => onCancel(e.message),
+        e => {
+          onCancel(new SigningErr.Unknown({ reason: e.message }));
+        },
       );
   };
 
   return (
-    <Dialog modal open onOpenChange={open => !open && onCancel('Rejected by user')}>
+    <Dialog modal open onOpenChange={open => !open && onCancel(new SigningErr.Rejected())}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Sign transaction</DialogTitle>
