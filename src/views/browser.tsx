@@ -94,7 +94,12 @@ const Content = memo(({ tab }: { tab: DAppTab }) => {
       changeTabConnectionStatus({ id: tab.id, status });
     });
 
-    container.isReady();
+    const ready = container.isReady();
+    ready.then(ready => {
+      if (ready) {
+        console.log('Container ready');
+      }
+    });
 
     return () => {
       container.dispose();
