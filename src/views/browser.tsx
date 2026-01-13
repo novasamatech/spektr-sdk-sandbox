@@ -78,15 +78,6 @@ const Content = memo(({ tab }: { tab: DAppTab }) => {
 
       return fromPromise(resolver.promise, e => e as never)
         .andThen(result => {
-          console.log({
-            signature: result.signature,
-            signedTransaction: result.signedTransaction
-              ? typeof result.signedTransaction === 'string'
-                ? result.signedTransaction
-                : toHex(result.signedTransaction)
-              : undefined,
-          });
-
           return ok({
             signature: result.signature,
             signedTransaction: result.signedTransaction
