@@ -78,6 +78,15 @@ const Content = memo(({ tab }: { tab: DAppTab }) => {
 
       return fromPromise(resolver.promise, e => e as never)
         .andThen(result => {
+          console.log({
+            signature: result.signature,
+            signedTransaction: result.signedTransaction
+              ? typeof result.signedTransaction === 'string'
+                ? result.signedTransaction
+                : toHex(result.signedTransaction)
+              : undefined,
+          });
+
           return ok({
             signature: result.signature,
             signedTransaction: result.signedTransaction
@@ -94,7 +103,12 @@ const Content = memo(({ tab }: { tab: DAppTab }) => {
       changeTabConnectionStatus({ id: tab.id, status });
     });
 
-    container.isReady();
+    const ready = container.isReady();
+    ready.then(ready => {
+      if (ready) {
+        console.log('Container ready');
+      }
+    });
 
     return () => {
       container.dispose();
